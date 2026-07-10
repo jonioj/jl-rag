@@ -1,12 +1,13 @@
 from typing import List
-
+import llm
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-
 import models
 import schemas
 from database import engine, get_db
-
+from llm.base import LLMProvider
+from llm.factory import get_llm_provider
+ 
 # Create tables on startup
 models.Base.metadata.create_all(bind=engine)
 
@@ -101,6 +102,31 @@ def delete_message(message_id: int, db: Session = Depends(get_db)):
     return {"detail": "Message deleted"}
 
 
+@app.post("/users/{u_id}/ask", response_model=schemas.MessageOut)
+def ask_question(
+    u_id: int,
+    payload: schemas.MessageCreate,
+    db: Session = Depends(get_db),
+    llm: LLMProvider = Depends(get_llm_provider),
+):
+    db_user = db.query(models.User).filter(models.User.id == u_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+ 
+    answer_text = llm.answer(payload.questions)
+ 
+    db_message = models.Message(
+        u_id=u_id,
+        questions=payload.questions,
+        answer=answer_text,
+    )
+    db.add(db_message)
+    db.commit()
+    db.refresh(db_message)
+    return db_message
+ 
+
 @app.get("/")
 def root():
     return {"message": "Users & Messages API is running"}
+
