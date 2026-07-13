@@ -13,7 +13,7 @@ from .services.question_service import build_contextual_prompt
 # Create tables on startup
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Users & Messages API")
+app = FastAPI(title="JL-rag API")
 
 
 # ---------------- Users ----------------

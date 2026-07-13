@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from llama_cpp import Llama
@@ -13,18 +14,21 @@ class LocalModelProvider(LLMProvider):
     """
 
     def __init__(self):
-        model_path = "/home/jonaszlaba/models/"+ "SmolLM2-360M-Instruct-Q4_K_M.gguf"
+        model_path = os.environ.get(
+            "MODEL_PATH",
+            "/models/SmolLM2-360M-Instruct-Q4_K_M.gguf",
+        )
+        if not Path(model_path).exists():
+            raise FileNotFoundError(
+                f"Model file not found at {model_path}. Mount the model or set MODEL_PATH."
+            )
+
         self.llm = Llama(
             model_path=str(model_path),
             n_ctx=2048,
             verbose=False,
         )
 
-
     def answer(self, prompt: str) -> str:
-        result = self.llm(
-        prompt,
-        max_tokens=100
-        )
-
+        result = self.llm(prompt, max_tokens=100)
         return result["choices"][0]["text"].strip()
