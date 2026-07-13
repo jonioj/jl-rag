@@ -3,7 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-client = chromadb.PersistentClient(path=f"{BASE_DIR}/dbs/chroma_db2")
+client = chromadb.PersistentClient(path=f"{BASE_DIR}/dbs/chroma_db")
 
 collection = client.get_or_create_collection(
     name="documents"
