@@ -9,15 +9,17 @@ collection = client.get_or_create_collection(
     name="documents"
 )
 collection.add(
-    ids=["doc1", "doc2", "doc3"],
+    ids=["doc1", "doc2", "doc3","doc4"],
     documents=[
         "chromadb is a database.",
         "ChromaDB is a vector database.",
-        "Embeddings enable semantic search."
+        "Embeddings enable semantic search.",
+        "Jonasz is polish."
     ],
     metadatas=[
         {"source": "wiki"},
         {"source": "docs"},
-        {"source": "blog"}
+        {"source": "blog"},
+        {"source": "user"}
     ]
 )
