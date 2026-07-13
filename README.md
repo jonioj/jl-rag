@@ -1,2 +1,5 @@
-# jl-rag
-# jl-rag
+# BUILD and RUN
+
+```bash
+uvicorn main:app --reload
+```

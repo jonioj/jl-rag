@@ -1,7 +1,11 @@
+import os
 from typing import List
+
 import llm
+import uvicorn
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+
 import models
 import schemas
 from database import engine, get_db
@@ -129,4 +133,13 @@ def ask_question(
 @app.get("/")
 def root():
     return {"message": "Users & Messages API is running"}
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=int(os.getenv("PORT", "8080")),
+        reload=False,
+    )
 
