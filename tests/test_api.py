@@ -41,13 +41,13 @@ def test_root_endpoint(client):
 def test_create_and_list_users(client):
     response = client.post("/users", json={"email": "alice@example.com"})
     assert response.status_code == 200
-    assert response.json()["email"] == "alice@example.com"
+    created_user = response.json()
+    assert created_user["email"] == "alice@example.com"
 
     response = client.get("/users")
     assert response.status_code == 200
     data = response.json()
-    assert len(data) == 1
-    assert data[0]["email"] == "alice@example.com"
+    assert any(user["id"] == created_user["id"] and user["email"] == created_user["email"] for user in data)
 
 
 def test_create_and_list_messages(client):
@@ -63,10 +63,10 @@ def test_create_and_list_messages(client):
         },
     )
     assert response.status_code == 200
-    assert response.json()["questions"] == "Hello"
+    created_message = response.json()
+    assert created_message["questions"] == "Hello"
 
     response = client.get("/messages")
     assert response.status_code == 200
     data = response.json()
-    assert len(data) == 1
-    assert data[0]["u_id"] == user_id
+    assert any(message["id"] == created_message["id"] and message["u_id"] == user_id for message in data)

@@ -1,8 +1,8 @@
 import os
 from functools import lru_cache
 
-from llm.base import LLMProvider
-from llm.local_provider import LocalModelProvider
+from .base import LLMProvider
+from .local_provider import LocalModelProvider
 
 
 @lru_cache()  # instantiate the provider once and reuse it across requests

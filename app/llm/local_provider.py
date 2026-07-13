@@ -1,5 +1,8 @@
-from llm.base import LLMProvider
+from pathlib import Path
+
 from llama_cpp import Llama
+
+from .base import LLMProvider
 
 
 class LocalModelProvider(LLMProvider):
@@ -10,10 +13,11 @@ class LocalModelProvider(LLMProvider):
     """
 
     def __init__(self):
+        model_path = Path(__file__).resolve().parents[2] / "models" / "SmolLM2-360M-Instruct-Q4_K_M.gguf"
         self.llm = Llama(
-            model_path="/home/jonaszlaba/models/SmolLM2-360M-Instruct-Q4_K_M.gguf",
+            model_path=str(model_path),
             n_ctx=2048,
-            verbose=False
+            verbose=False,
         )
 
 
