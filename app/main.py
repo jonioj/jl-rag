@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 from .database import engine, get_db
 from .llm.base import LLMProvider
+from .rag.rag import collection
 from .llm.factory import get_llm_provider
- 
 # Create tables on startup
 models.Base.metadata.create_all(bind=engine)
 
@@ -114,9 +114,24 @@ def ask_question(
     db_user = db.query(models.User).filter(models.User.id == u_id).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
- 
-    answer_text = llm.answer(payload.questions)
- 
+
+    try:
+        search_results = collection.query(query_texts=[payload.questions], n_results=3)
+        documents = search_results.get("documents", [[]])[0] if search_results else []
+        context_text = "\n".join(documents) if documents else ""
+    except Exception:
+        context_text = ""
+
+    prompt = payload.questions
+    if context_text:
+        prompt = (
+            "Use the following context to answer the question.\n"
+            f"Context:\n{context_text}\n\n"
+            f"Question: {payload.questions}"
+        )
+
+    answer_text = llm.answer(prompt)
+
     db_message = models.Message(
         u_id=u_id,
         questions=payload.questions,
