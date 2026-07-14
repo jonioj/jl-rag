@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import List
 
 import uvicorn
@@ -9,11 +10,31 @@ from . import models, schemas
 from .database import engine, get_db
 from .llm.base import LLMProvider
 from .llm.factory import get_llm_provider
+from .rag.ingest import ingest_documents_from_directory
+from .rag.rag import get_collection
 from .services.question_service import build_contextual_prompt
+
+DEFAULT_DOCUMENTS_DIR = Path(__file__).resolve().parent / "rag" / "documents"
+
 # Create tables on startup
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="JL-rag API")
+
+
+def reset_and_ingest_documents(directory: str | None = None) -> int:
+    collection = get_collection(reset=True)
+    documents_dir = directory or os.getenv(
+        "DOCUMENTS_DIR",
+        str(DEFAULT_DOCUMENTS_DIR),
+    )
+    return ingest_documents_from_directory(documents_dir, collection=collection)
+
+
+@app.on_event("startup")
+def startup_event() -> None:
+    count = reset_and_ingest_documents()
+    print(f"Ingested {count} document chunks on startup")
 
 
 # ---------------- Users ----------------
@@ -128,6 +149,12 @@ def ask_question(
     db.refresh(db_message)
     return db_message
  
+
+@app.post("/ingest")
+def ingest_documents(directory: str):
+    count = reset_and_ingest_documents(directory)
+    return {"count": count, "directory": directory}
+
 
 @app.get("/")
 def root():

@@ -1,25 +1,25 @@
-import chromadb
 from pathlib import Path
 
+import chromadb
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+DB_DIR = BASE_DIR / "dbs" / "chroma_db"
+DB_DIR.mkdir(parents=True, exist_ok=True)
 
-client = chromadb.PersistentClient(path=f"{BASE_DIR}/dbs/chroma_db")
+client = chromadb.PersistentClient(path=str(DB_DIR))
 
-collection = client.get_or_create_collection(
-    name="documents"
-)
-collection.add(
-    ids=["doc1", "doc2", "doc3","doc4"],
-    documents=[
-        "chromadb is a database.",
-        "ChromaDB is a vector database.",
-        "Embeddings enable semantic search.",
-        "Jonasz is polish."
-    ],
-    metadatas=[
-        {"source": "wiki"},
-        {"source": "docs"},
-        {"source": "blog"},
-        {"source": "user"}
-    ]
-)
+
+def get_collection(reset: bool = False):
+    global collection
+
+    if reset:
+        try:
+            client.delete_collection(name="documents")
+        except Exception:
+            pass
+
+    collection = client.get_or_create_collection(name="documents")
+    return collection
+
+
+collection = get_collection()

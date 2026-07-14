@@ -1,0 +1,3 @@
+This is a sample document about the JL RAG application.
+It explains that the system ingests documents into a vector database and uses semantic search to answer questions.
+The project combines FastAPI, ChromaDB, and a local LLM provider.
