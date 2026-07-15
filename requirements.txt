@@ -2,7 +2,6 @@ fastapi
 uvicorn[standard]
 sqlalchemy
 pydantic[email]
-llama-cpp-python
 chromadb
 pytest
 httpx

@@ -34,7 +34,12 @@ def reset_and_ingest_documents(directory: str | None = None) -> int:
 @app.on_event("startup")
 def startup_event() -> None:
     count = reset_and_ingest_documents()
-    print(f"Ingested {count} document chunks on startup")
+    embeddings = get_collection().get(
+    include=["embeddings"]
+    )
+    print(embeddings['ids'])
+
+    
 
 
 # ---------------- Users ----------------

@@ -1,7 +1,8 @@
-from ..rag.rag import collection
+from ..rag.rag import get_collection
 
 
 def build_contextual_prompt(question: str) -> str:
+    collection = get_collection()
     search_results = collection.query(query_texts=[question], n_results=3)
     documents = search_results.get("documents", [[]])[0] if search_results else []
     distances = search_results.get("distances", [[]])[0] if search_results else []

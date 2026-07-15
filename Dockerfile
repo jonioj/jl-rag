@@ -2,8 +2,7 @@ FROM python:3.13-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PORT=8080 \
-    MODEL_PATH=/models/SmolLM2-360M-Instruct-Q4_K_M.gguf
+    PORT=8080 
 
 WORKDIR /app
 
